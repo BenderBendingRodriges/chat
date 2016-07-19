@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "out": "D:/xampp/htdocs/salago/chat/app.js", 
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": false,
+        "outDir": "built",
+        "rootDir": ".",
+        "sourceMap": true
+    },
+    "exclude": [
+        "node_modules"
+        // "D:/xampp/htdocs/salago/public/app/ts/libs"
+    ]
+}
