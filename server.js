@@ -100,6 +100,8 @@ io.on('connection', function(socket){
       res.on('end',function(){
         var jsonData = JSON.parse(userData);
         clients[socket.id].user = jsonData;
+        clients[socket.id].roomsWatching = [];
+        
         getRooms(clients[socket.id],function(result){
           // console.log(result);
             fn(result);
@@ -146,18 +148,11 @@ io.on('connection', function(socket){
 
 
         if(typeof rooms[room.id] == 'undefined'){
-            rooms[room.id] = room;  
-            rooms[room.id].users = [];
-            if(!rooms[room.id].client)
-            rooms[room.id].client =  clients[socket.id].user;
-        }
-        // console.log('ROOM',room.id,clients[socket.id].user.id)
-        // rooms[room.id].users.pushIfNotExist( clients[socket.id].user,function(e) {return e.id === clients[socket.id].user.id;});
+            rooms[room.id] = room;             
+        }       
         socket.join(room.id);
-        console.log(room.id);
+        // clients[socket.id].user.client = clients[socket.id];
         clients[socket.id].room = rooms[room.id];
-        // socket.emit('chat rooms', 5);
-        // var array = Object.keys(rooms).map(function (key) {return rooms[key]});
       })
       
     });
@@ -179,7 +174,7 @@ io.on('connection', function(socket){
           timestamp : Date.now(),
           type: type,
           readed:true,
-          usersReaded : []
+          usersReaded : [clients[socket.id].user]
       }
       clients[socket.id].room.lastMessage = msg.timestamp;
       clients[socket.id].room.messages.push(msg);
@@ -189,7 +184,8 @@ io.on('connection', function(socket){
           room : clients[socket.id].room.id,
           user : clients[socket.id].user.id,
           content : content,
-          type: type
+          type: type,
+          usersReaded : msg.usersReaded
       });
       var req = http.request({
           host: 'salago.local',
@@ -208,11 +204,22 @@ io.on('connection', function(socket){
           res.on('end',function(){
               var dBmsg = JSON.parse(responseBody);
               msg.id = dBmsg.id;
-              // console.log(clients[socket.id].room.id);
-              // io.to(clients[socket.id].room.id).emit('chat message', clients[socket.id].room.messages);
               io.to(clients[socket.id].room.id).emit('chat message', [msg]);
-              notifyAdmins();
-              //io.emit('chat admin rooms', Object.keys(rooms).map(function (key) {return rooms[key]}));
+              if(clients[socket.id].room.messages.length == 1){
+                console.log("NOTIFY");
+                for(var clientId in clients){
+                  if(typeof clients[clientId].roomsWatching != "undefined"){
+                    getRooms(clients[clientId],function(result){
+                        socket.broadcast.to(clientId).emit('chat admin rooms',result);
+                        console.log(result);
+                        notifyAdmins();
+                    });
+                  }
+                }
+              }else{
+                notifyAdmins();
+              }
+              
           })
       
       });
@@ -231,15 +238,46 @@ io.on('connection', function(socket){
   socket.on('chat readed', function(data){
       var index = clients[socket.id].room.messages.map(function(m){return m.id;}).indexOf(data.id);      
       if(index > -1){ 
-        // console.log();        
+        var msg = clients[socket.id].room.messages[index];   
         clients[socket.id].room.messages[index].usersReaded.pushIfNotExist(data.user,function(e) {return e.id === data.user.id});
-        socket.broadcast.emit('chat readed', data);     
-        io.to(clients[socket.id].room.id).emit('chat message', [clients[socket.id].room.messages[index]]);     
+        socket.broadcast.emit('chat readed ' + msg.id, data);     
+        
+        io.to(clients[socket.id].room.id).emit('chat message', [msg]);     
+        var post_data = JSON.stringify({
+          usersReaded : msg.usersReaded
+      });
+      var req = http.request({
+          host: 'salago.local',
+          port: 80,
+          path: '/rest/chat/' + msg.id,
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(post_data)
+          }
+      }, function(res) {
+          // var responseBody = '';
+          // res.on('data', function (chunk) {
+          //     responseBody += chunk;          
+          // });
+          // res.on('end',function(){
+          //     var dBmsg = JSON.parse(responseBody);
+          //     msg.id = dBmsg.id;
+          //     // console.log(clients[socket.id].room.id);
+          //     // io.to(clients[socket.id].room.id).emit('chat message', clients[socket.id].room.messages);
+          //     io.to(clients[socket.id].room.id).emit('chat message', [msg]);
+          //     notifyAdmins();
+          //     //io.emit('chat admin rooms', Object.keys(rooms).map(function (key) {return rooms[key]}));
+          // })
+      
+      });
+      req.write(post_data);
+      req.end();
       }
   });
 
 });
 
-server.listen(8080, function(){
+server.listen(3000, function(){
   console.log('listening on *:3000');
 });

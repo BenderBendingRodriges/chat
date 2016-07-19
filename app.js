@@ -318,9 +318,10 @@ var App;
                 },
                 controller: function ($scope) {
                     $scope.timeState = function () {
-                        // console.log('timeState');
+                        console.log();
                         if ($scope.secconds < 15 * 60)
                             return 1;
+                        // if(moment().diff($scope.msg.timestamp) < 6 * 60 * 1e3)return 1;
                         if (moment().startOf('day').isSame(moment($scope.msg.timestamp).startOf('day')))
                             return 2;
                         return 3;
@@ -331,18 +332,23 @@ var App;
                             $scope.secconds = Math.floor((Date.now() - $scope.msg.timestamp) / 1000);
                             // $scope.$apply();
                         });
-                    }, 1000);
-                    $scope.$watch(function () { return $scope.msg.readed; }, function (flag) {
+                    }, 1000 * 60);
+                    var readListner = $scope.$watch(function () { return $scope.msg.readed; }, function (flag) {
                         if (flag /* && $scope.msg.user.id != $scope.$parent.user.id*/) {
-                            console.log($scope.$parent.user.id);
-                            SocketIo.emit("chat readed", { id: $scope.msg.id, user: $scope.$parent.user }, function () { });
+                            var data = { id: $scope.msg.id, user: $scope.$parent.user };
+                            var lengthBefore = $scope.msg.usersReaded.length;
+                            $scope.msg.usersReaded.pushIfNotExist(data.user, function (e) {
+                                return e.id === data.user.id;
+                            });
+                            if ($scope.msg.usersReaded.length > lengthBefore) {
+                                SocketIo.emit("chat readed", data, function () { });
+                                readListner();
+                            }
                         }
                     });
-                    SocketIo.on("chat readed", function (data) {
+                    SocketIo.on("chat readed " + $scope.msg.id, function (data) {
                         // console.log(data.id,$scope.msg.id);
-                        if (data.id != $scope.msg.id)
-                            return;
-                        console.log(data.user.id);
+                        // if(data.id != $scope.msg.id)return;
                         $scope.msg.usersReaded.pushIfNotExist(data.user, function (e) {
                             return e.id === data.user.id;
                         });
