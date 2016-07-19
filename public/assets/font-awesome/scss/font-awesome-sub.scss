@@ -1,0 +1,18 @@
+@import "variables";
+$fa-css-prefix : 'fa-sub';
+
+.fa-sub{
+	
+}
+.fa-sub:after{
+    position: absolute;
+    font-size: 60%;
+    line-height: 0;
+}
+
+.fa-fw.fa-sub {
+  width: (20em / 14);
+  text-align: center;
+}
+
+@import "iconssub";

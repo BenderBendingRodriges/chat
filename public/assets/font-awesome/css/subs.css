@@ -1,0 +1,16 @@
+.fa.fa-sub:after {
+        font-size: 0.6em;
+    position: absolute;
+    line-height: 0;
+    margin-top: -0.3em;
+    margin-left: -0.0em;
+   
+}
+.fa.fa-sub.fa-sub-plus:after {
+    
+    content: "\f067";
+}
+.fa.fa-sub.fa-sub-edit:after,
+.fa.fa-sub.fa-sub-pencil:after{content: "\f040";}
+.fa.fa-sub.fa-sub-lock:after{content: "\f023";}
+.fa.fa-sub.fa-sub-trash:after{content: "\f014";}

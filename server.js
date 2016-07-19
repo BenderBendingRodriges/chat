@@ -25,7 +25,7 @@ Array.prototype.pushIfNotExist = function(element, comparer) {
 }; 
 
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.static(path.join(__dirname, '/chat-template')));
 app.use(express.static(path.join(__dirname, '/node_modules')));
 app.use(express.static(path.join(__dirname, '/js')));
@@ -256,20 +256,6 @@ io.on('connection', function(socket){
               'Content-Length': Buffer.byteLength(post_data)
           }
       }, function(res) {
-          // var responseBody = '';
-          // res.on('data', function (chunk) {
-          //     responseBody += chunk;          
-          // });
-          // res.on('end',function(){
-          //     var dBmsg = JSON.parse(responseBody);
-          //     msg.id = dBmsg.id;
-          //     // console.log(clients[socket.id].room.id);
-          //     // io.to(clients[socket.id].room.id).emit('chat message', clients[socket.id].room.messages);
-          //     io.to(clients[socket.id].room.id).emit('chat message', [msg]);
-          //     notifyAdmins();
-          //     //io.emit('chat admin rooms', Object.keys(rooms).map(function (key) {return rooms[key]}));
-          // })
-      
       });
       req.write(post_data);
       req.end();
