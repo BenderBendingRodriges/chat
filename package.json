@@ -2,7 +2,7 @@
   "name": "socket-chat-example",
   "version": "0.0.1",
   "description": "my first socket.io app",
-  // "start": "node server.js",
+  "start": "node server.js",
   "dependencies": {
     "express": "^4.10.2",
     "moment": "^2.14.1",
