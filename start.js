@@ -148,6 +148,7 @@ io.on('connection', function(socket){
         if(typeof rooms[room.id] == 'undefined'){
             rooms[room.id] = room;  
             rooms[room.id].users = [];
+            if(!rooms[room.id].client)
             rooms[room.id].client =  clients[socket.id].user;
         }
         // console.log('ROOM',room.id,clients[socket.id].user.id)
@@ -239,6 +240,6 @@ io.on('connection', function(socket){
 
 });
 
-server.listen(3000, function(){
+server.listen(8080, function(){
   console.log('listening on *:3000');
 });
