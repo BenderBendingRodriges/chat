@@ -1,4 +1,5 @@
 module App.Factory {
+  var 
   "use strict"
   var vars = {}, hash;
   var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -8,13 +9,16 @@ module App.Factory {
       // vars.push(hash[0]);
       vars[hash[0]] = hash[1];
   }
-  var socket = io('http://localhost:3000/',{query:vars});
+  var socket = io('http://chat-salago-chat.44fs.preview.openshiftapps.com/',{query:vars});
+  // var socket = io('http://localhost:3000/',{query:vars});
+  
 
   export interface ISocketIo{
       on(eventName:string,callback): void;
       emit(eventName:string,data:Object,callback): void;
   }
   export function SocketIoFactory($rootScope) :ISocketIo{
+
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  

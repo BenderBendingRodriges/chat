@@ -2,6 +2,7 @@ var App;
 (function (App) {
     var Factory;
     (function (Factory) {
+        var ;
         "use strict";
         var vars = {}, hash;
         var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -10,7 +11,7 @@ var App;
             // vars.push(hash[0]);
             vars[hash[0]] = hash[1];
         }
-        var socket = io('http://localhost:3000/', { query: vars });
+        var socket = io('http://chat-salago-chat.44fs.preview.openshiftapps.com/', { query: vars });
         function SocketIoFactory($rootScope) {
             return {
                 on: function (eventName, callback) {
