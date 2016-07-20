@@ -8,6 +8,8 @@ var co = require("./cookie.js");
 var cookieString = null;
 var querystring = require('querystring');
 require('./routes')(app);
+var config = require('./config.json');
+console.log(config);
 
 Array.prototype.inArray = function(comparer) { 
     for(var i=0; i < this.length; i++) { 
@@ -40,7 +42,7 @@ var cookies;
 var getRooms = function(client,callback){
   // console.log(cookies);
     var req = http.request({
-      host: 'salago.local',
+      host: config.rest,
       port: 80,
       path: '/rest/chat.rooms',
       method: 'GET',
@@ -80,7 +82,7 @@ io.on('connection', function(socket){
   socket.on('login admin',function(cookieString,fn){
      clients[socket.id].cookies = cookieString;
      var options = {
-      host: 'salago.local',
+      host: config.rest,
       port: 80,
       path: '/rest/me',
       method: 'GET',
@@ -117,7 +119,7 @@ io.on('connection', function(socket){
      cookies = data.cookies;
      var post_data = JSON.stringify(data.options);
      var options = {
-      host: 'salago.local',
+      host: config.rest,
       port: 80,
       path: '/rest/chat.room',
       method: 'GET',
@@ -188,7 +190,7 @@ io.on('connection', function(socket){
           usersReaded : msg.usersReaded
       });
       var req = http.request({
-          host: 'salago.local',
+          host: config.rest,
           port: 80,
           path: '/rest/chat',
           method: 'POST',
@@ -247,7 +249,7 @@ io.on('connection', function(socket){
           usersReaded : msg.usersReaded
       });
       var req = http.request({
-          host: 'salago.local',
+          host: config.rest,
           port: 80,
           path: '/rest/chat/' + msg.id,
           method: 'PUT',
@@ -264,6 +266,6 @@ io.on('connection', function(socket){
 
 });
 
-server.listen(3000, function(){
-  console.log('listening on *:3000');
+server.listen(config.port, function(){
+  console.log('listening on *:'+config.port);
 });
