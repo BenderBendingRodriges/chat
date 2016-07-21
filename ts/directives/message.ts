@@ -24,7 +24,8 @@ module App.Directives {
             scope: {
                 msg : "="
             },
-            controller : function($scope){
+            controller : function($scope,$element){
+                
                 $scope.timeState = function(){
                     console.log();
                     if($scope.secconds < 15 * 60)return 1;
@@ -39,7 +40,11 @@ module App.Directives {
                     // $scope.$apply();
                     });
                 }, 1000 * 60);
-
+                $timeout(function() {
+                $($element).find('[data-toggle="tooltip"]').tooltip({
+                    'placement' : $scope.msg.my ? 'right' : 'left'
+                });
+                },500);
                 var readListner =$scope.$watch(function(){return $scope.msg.readed;},function(flag){
                     if(flag/* && $scope.msg.user.id != $scope.$parent.user.id*/){
                         var data = {id:$scope.msg.id,user:$scope.$parent.user};
@@ -64,7 +69,9 @@ module App.Directives {
                     });
 
                 });
-
+                $scope.tt = function(usr){
+                    return usr.name;
+                }
                 $scope.notReaded = function(){
                     // return false;
                     if($scope.msg.readed == true)return false;

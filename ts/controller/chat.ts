@@ -17,19 +17,26 @@ module App.Controller {
     	usersReaded : Array<IUser>
 	}
 	export class Message implements IMessage{
-		public constructor(private data:IMessage, private user:IUser){
+		public constructor(private data:IMessage, private me:IUser){
 			// this.data.readed = false;
-			this.data.readed = this.usersReadedIds.indexOf(user.id) > -1;
+			this.data.readed = this.usersReadedIds.indexOf(me.id) > -1;
 			// console.log(this.usersReadedIds.indexOf(user.id));
 		}
 		public get id():number {return this.data.id};
+		public get user():IUser {return this.data.user};
 		public get content():string {return this.data.content};
-		public get my():boolean {return this.data.user.id == this.user.id;};
+		public get my():boolean {return this.data.user.id == this.me.id;};
 		public get type():string {return this.data.type};
 		public get timestamp():number {return this.data.timestamp};
 		public get usersReaded():Array<IUser> {return this.data.usersReaded};
 		public set usersReaded(arr:Array<IUser>) {this.data.usersReaded = arr};
 		public get usersReadedIds():Array<number> {return this.data.usersReaded.map(function(u){return u.id;})};
+		public get usersReadedNotMe():Array<IUser> {
+			var _this = this;
+			return this.data.usersReaded.filter(function(u){
+				return u.id != _this.me.id;
+			})
+		};
 		public get readed():boolean {return this.data.readed};
 		public set readed(val:boolean) {
 

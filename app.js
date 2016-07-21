@@ -4,14 +4,15 @@ var App;
     (function (Factory) {
         // var 
         "use strict";
-        var vars = {}, hash;
-        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-        for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split('=');
-            // vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
-        }
-        var socket = io('http://chat-salago-chat.44fs.preview.openshiftapps.com/', { query: vars });
+        // var vars = {}, hash;
+        // var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        // for(var i = 0; i < hashes.length; i++)
+        // {
+        //     hash = hashes[i].split('=');
+        //     // vars.push(hash[0]);
+        //     vars[hash[0]] = hash[1];
+        // }
+        var socket = io();
         function SocketIoFactory($rootScope) {
             return {
                 on: function (eventName, callback) {
@@ -44,15 +45,21 @@ var App;
     (function (Controller) {
         "use strict";
         var Message = (function () {
-            function Message(data, user) {
+            function Message(data, me) {
                 this.data = data;
-                this.user = user;
+                this.me = me;
                 // this.data.readed = false;
-                this.data.readed = this.usersReadedIds.indexOf(user.id) > -1;
+                this.data.readed = this.usersReadedIds.indexOf(me.id) > -1;
                 // console.log(this.usersReadedIds.indexOf(user.id));
             }
             Object.defineProperty(Message.prototype, "id", {
                 get: function () { return this.data.id; },
+                enumerable: true,
+                configurable: true
+            });
+            ;
+            Object.defineProperty(Message.prototype, "user", {
+                get: function () { return this.data.user; },
                 enumerable: true,
                 configurable: true
             });
@@ -64,7 +71,7 @@ var App;
             });
             ;
             Object.defineProperty(Message.prototype, "my", {
-                get: function () { return this.data.user.id == this.user.id; },
+                get: function () { return this.data.user.id == this.me.id; },
                 enumerable: true,
                 configurable: true
             });
@@ -91,6 +98,17 @@ var App;
             ;
             Object.defineProperty(Message.prototype, "usersReadedIds", {
                 get: function () { return this.data.usersReaded.map(function (u) { return u.id; }); },
+                enumerable: true,
+                configurable: true
+            });
+            ;
+            Object.defineProperty(Message.prototype, "usersReadedNotMe", {
+                get: function () {
+                    var _this = this;
+                    return this.data.usersReaded.filter(function (u) {
+                        return u.id != _this.me.id;
+                    });
+                },
                 enumerable: true,
                 configurable: true
             });
@@ -317,7 +335,7 @@ var App;
                 scope: {
                     msg: "="
                 },
-                controller: function ($scope) {
+                controller: function ($scope, $element) {
                     $scope.timeState = function () {
                         console.log();
                         if ($scope.secconds < 15 * 60)
@@ -334,6 +352,11 @@ var App;
                             // $scope.$apply();
                         });
                     }, 1000 * 60);
+                    $timeout(function () {
+                        $($element).find('[data-toggle="tooltip"]').tooltip({
+                            'placement': $scope.msg.my ? 'right' : 'left'
+                        });
+                    }, 500);
                     var readListner = $scope.$watch(function () { return $scope.msg.readed; }, function (flag) {
                         if (flag /* && $scope.msg.user.id != $scope.$parent.user.id*/) {
                             var data = { id: $scope.msg.id, user: $scope.$parent.user };
@@ -354,6 +377,9 @@ var App;
                             return e.id === data.user.id;
                         });
                     });
+                    $scope.tt = function (usr) {
+                        return usr.name;
+                    };
                     $scope.notReaded = function () {
                         // return false;
                         if ($scope.msg.readed == true)

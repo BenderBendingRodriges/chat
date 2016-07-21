@@ -1,15 +1,16 @@
 module App.Factory {
   // var 
   "use strict"
-  var vars = {}, hash;
-  var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-  for(var i = 0; i < hashes.length; i++)
-  {
-      hash = hashes[i].split('=');
-      // vars.push(hash[0]);
-      vars[hash[0]] = hash[1];
-  }
-  var socket = io('http://chat-salago-chat.44fs.preview.openshiftapps.com/',{query:vars});
+  // var vars = {}, hash;
+  // var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+  // for(var i = 0; i < hashes.length; i++)
+  // {
+  //     hash = hashes[i].split('=');
+  //     // vars.push(hash[0]);
+  //     vars[hash[0]] = hash[1];
+  // }
+  var socket = io();
+  // var socket = io('http://chat-salago-chat.44fs.preview.openshiftapps.com/',{query:vars});
   // var socket = io('http://localhost:3000/',{query:vars});
   
 

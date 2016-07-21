@@ -152,6 +152,7 @@ io.on('connection', function(socket){
         if(typeof rooms[room.id] == 'undefined'){
             rooms[room.id] = room;             
         }       
+        console.log(rooms[room.id]);
         socket.join(room.id);
         // clients[socket.id].user.client = clients[socket.id];
         clients[socket.id].room = rooms[room.id];

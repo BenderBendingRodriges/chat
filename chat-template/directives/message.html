@@ -2,20 +2,24 @@
 	<div class="direct-chat-info clearfix">
 		
 		<span class="direct-chat-name pull-left" ng-if="!msg.my">
-		<i class="fa fa-warning fa-fw pull-left" ng-if="notReaded()"></i>
-		{{msg.user.firstname}} {{msg.user.lastname}} <span class="text-muted">{{msg.user.email}}</span></span>
+			<i class="fa fa-warning fa-fw pull-left" ng-if="notReaded()"></i>
+			{{msg.user.name}}
+		</span>
 		<span class="direct-chat-timestamp" ng-class="{'pull-left' : msg.my, 'pull-right' : !msg.my}">
-		<!-- <span class="badge">{{msg.id}}</span> -->
 			<time am-time-ago="msg.timestamp" ng-if="timeState() == 1"></time> 
 			<time ng-if="timeState() == 2">{{ msg.timestamp | amDateFormat: 'HH:mm' }}</time>
 			<time ng-if="timeState() == 3">{{ msg.timestamp | amDateFormat: 'D MMMM HH:mm' }}</time>
 		</span>
-		<span class="direct-chat-name pull-right" ng-if="msg.my">{{msg.user.firstname}} {{msg.user.lastname}} <span class="text-muted">{{msg.user.email}}</span></span>
+		<span class="direct-chat-name pull-right" ng-if="msg.my">{{msg.user.name}}</span>
 	</div>
 	<img class="direct-chat-img" alt="Message User Image" ng-src="{{msg.user.avatar}}">
 	<div ng-include src="'/directives/' + msg.type + '.html'" include-replace></div>
 
 	<div class="readed-avatars">
-		<img class="direct-chat-img" ng-repeat="usr in msg.usersReaded track by usr.id" alt="Message User Image" ng-src="{{usr.avatar}}">
+		<img class="direct-chat-img" ng-repeat="usr in msg.usersReaded track by usr.id" 
+		
+		 data-toggle="tooltip" title="{{tt(usr)}}" ng-if="usr.id != msg.me.id && usr.id != msg.user.id"
+		ng-src="{{usr.avatar}}">
+		
 	</div>
 </div>
